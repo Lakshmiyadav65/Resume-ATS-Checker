@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResumeCheck — Will your resume pass the ATS?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --ink: #1a1a1a;
+    --ink-2: #4a4a4a;
+    --ink-3: #888;
+    --line: #e8e6e0;
+    --line-2: #f0eee8;
+    --accent: #e8b84a;
+    --accent-2: #c89529;
+    --accent-soft: #fdf6e3;
+    --good: #2d5a3f;
+    --good-soft: #eef4ee;
+    --warn: #b8742a;
+    --warn-soft: #faf2e6;
+    --bad: #a13d2d;
+    --bad-soft: #fbeeea;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .serif { font-family: 'Instrument Serif', serif; font-weight: 400; }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  header {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .logo-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 3px 2px 2px;
+    vertical-align: middle;
+  }
+  .help-link {
+    font-size: 13px;
+    color: var(--ink-3);
+    text-decoration: none;
+  }
+  .help-link:hover { color: var(--ink); }
+
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .eyebrow {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero .sub {
+    margin-top: 22px;
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .steps {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    font-size: 13px;
+    color: var(--ink-3);
+    flex-wrap: wrap;
+  }
+  .step-num {
+    display: inline-block;
+    width: 22px; height: 22px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 11px;
+    margin-right: 8px;
+    color: var(--ink);
+  }
+
+  .form-section { padding: 60px 0; }
+  .input-block { margin-bottom: 36px; }
+  .input-block label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .input-block .hint {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea.resume { min-height: 240px; }
+  textarea.jd { min-height: 180px; }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+  }
+  .btn {
+    padding: 14px 28px;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .btn-primary:hover {
+    background: var(--ink);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 4px var(--accent);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink-2);
+  }
+  .btn-ghost:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .results {
+    display: none;
+    border-top: 1px solid var(--line);
+    padding: 60px 0;
+  }
+  .results.show { display: block; }
+
+  .score-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .score-eyebrow {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  .score-number {
+    font-family: 'Instrument Serif', serif;
+    font-size: 96px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .score-number sub {
+    font-size: 24px;
+    color: var(--ink-3);
+    vertical-align: baseline;
+    font-family: 'Inter', sans-serif;
+  }
+  .verdict-pill {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .verdict-pill.good { background: var(--good-soft); color: var(--good); }
+  .verdict-pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .verdict-pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .verdict-msg {
+    margin-top: 14px;
+    font-size: 15px;
+    color: var(--ink-2);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .gap-callout {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .gap-callout strong { color: var(--accent-2); font-weight: 600; }
+
+  .section-block { margin-bottom: 48px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .section-head .num {
+    font-size: 13px;
+    color: var(--ink-3);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--ink-3);
+    margin-bottom: 24px;
+    max-width: 540px;
+  }
+
+  .metric {
+    display: grid;
+    grid-template-columns: 200px 1fr 80px;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-2);
+    font-size: 14px;
+  }
+  .metric:last-child { border-bottom: none; }
+  .metric .name { color: var(--ink); }
+  .metric .bar {
+    height: 4px;
+    background: var(--line-2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .metric .bar > div {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--ink);
+  }
+  .metric.good .bar > div { background: var(--good); }
+  .metric.warn .bar > div { background: var(--warn); }
+  .metric.bad .bar > div { background: var(--bad); }
+  .metric .val {
+    font-size: 13px;
+    color: var(--ink-2);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kw-group { margin-top: 24px; }
+  .kw-group h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    margin-bottom: 10px;
+  }
+  .kw-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kw {
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .kw.matched {
+    background: var(--good-soft);
+    color: var(--good);
+    border-color: transparent;
+  }
+  .kw.missing {
+    background: var(--bad-soft);
+    color: var(--bad);
+    border-color: transparent;
+  }
+  .kw.missing::before { content: "+ "; opacity: 0.7; }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+  .project-card .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .project-card .title { font-weight: 600; font-size: 15px; }
+  .score-pill {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .score-pill.good { background: var(--good-soft); color: var(--good); }
+  .score-pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .score-pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .project-card .original {
+    font-size: 13px;
+    color: var(--ink-2);
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 6px;
+    margin: 8px 0 12px;
+    line-height: 1.55;
+  }
+  .issues-list { list-style: none; padding: 0; margin: 0 0 14px; }
+  .issues-list li {
+    font-size: 13px;
+    color: var(--ink-2);
+    padding: 4px 0 4px 22px;
+    position: relative;
+  }
+  .issues-list li::before {
+    content: "—";
+    position: absolute;
+    left: 4px;
+    color: var(--bad);
+  }
+  .rewrite-box {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .rewrite-box .lbl {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-2);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .rewrite-box .body {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+
+  .lift-list { border-top: 1px solid var(--line-2); }
+  .lift-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line-2);
+    align-items: flex-start;
+  }
+  .lift-item .desc { flex: 1; font-size: 14px; }
+  .lift-item .desc strong { font-weight: 600; }
+  .lift-item .desc small {
+    display: block;
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-top: 4px;
+  }
+  .lift-item .gain {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-2);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  footer {
+    padding: 32px 0;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  .results.show .section-block,
+  .results.show .score-card {
+    animation: fadeUp 0.5s ease both;
+  }
+  .results.show .score-card { animation-delay: 0.05s; }
+  .results.show .section-block:nth-of-type(2) { animation-delay: 0.15s; }
+  .results.show .section-block:nth-of-type(3) { animation-delay: 0.25s; }
+  .results.show .section-block:nth-of-type(4) { animation-delay: 0.35s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .metric { grid-template-columns: 130px 1fr 60px; }
+    .hero { padding: 60px 0 40px; }
+    .steps { gap: 18px; }
+    .score-number { font-size: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">resume<span class="logo-dot"></span>check</div>
+    <a href="#how" class="help-link">How it works</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">For students applying to their first roles</div>
+    <h1>Will your resume <em>pass</em> the algorithm before a human ever sees it?</h1>
+    <p class="sub">Most companies filter resumes with software before recruiters read them. Paste yours below to see exactly what to fix.</p>
+    <div class="steps">
+      <div><span class="step-num">1</span>Paste resume</div>
+      <div><span class="step-num">2</span>Paste job</div>
+      <div><span class="step-num">3</span>Get fixes</div>
+    </div>
+  </div>
+</section>
+
+<section class="form-section" id="input-section">
+  <div class="container">
+    <div class="input-block">
+      <label for="resume">Your resume</label>
+      <p class="hint">Paste the full text. Include your projects, skills, and experience sections.</p>
+      <textarea class="resume" id="resume" placeholder="Paste your resume here...">JOHN DOE
+john.doe@email.com | (555) 123-4567 | github.com/johndoe
+
+EDUCATION
+B.Tech Computer Science, IIT Hyderabad, 2026
+CGPA: 8.4
+
+PROJECTS
+Personal Portfolio Site
+Worked on a personal portfolio website. Used HTML, CSS and some JavaScript. Helped me learn web development.
+
+Movie Recommendation App
+Built a movie recommendation system that suggests films to users. Used Python and pandas. Was responsible for the backend.
+
+SKILLS
+Python, Java, HTML, CSS, JavaScript, Git, problem solving, teamwork
+
+EXPERIENCE
+Summer Intern, ABC Corp (2 months)
+Worked on internal tools and helped the team with various tasks.</textarea>
+    </div>
+
+    <div class="input-block">
+      <label for="jd">Job description</label>
+      <p class="hint">Paste the job posting you want to apply to.</p>
+      <textarea class="jd" id="jd" placeholder="Paste the job description...">Software Engineer Intern — Frontend
+
+We're hiring a Frontend Engineering Intern to help build customer-facing web applications.
+
+Required Skills:
+- Strong fundamentals in JavaScript and TypeScript
+- Experience with React and modern build tools (Vite, Webpack)
+- Familiarity with REST APIs and version control (Git)
+- Knowledge of responsive design and CSS frameworks (Tailwind preferred)
+- Understanding of testing (Jest, Cypress)
+
+Nice to Have:
+- Next.js experience
+- Worked with state management (Redux, Zustand)
+- Deployed apps to Vercel or similar
+- Open-source contributions</textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="analyze()">Check my resume</button>
+      <button class="btn btn-ghost" onclick="resetDemo()">Reset</button>
+    </div>
+  </div>
+</section>
+
+<section class="results" id="results">
+  <div class="container">
+
+    <div class="score-card">
+      <div class="score-eyebrow">Your ATS score</div>
+      <div class="score-number"><span id="score">--</span><sub>/100</sub></div>
+      <div class="verdict-pill" id="verdict-pill">analyzing...</div>
+      <div class="verdict-msg" id="verdict-msg"></div>
+      <div class="gap-callout" id="gap-callout"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-head">
+        <span class="num serif">01</span>
+        <h2>How well your resume matches the job</h2>
+      </div>
+      <p class="section-desc">The ATS looks for specific keywords from the job description. Here's where you stand.</p>
+      <div id="metrics"></div>
+      <div class="kw-group">
+        <h4>Keywords you have</h4>
+        <div class="kw-cloud" id="kw-matched"></div>
+      </div>
+      <div class="kw-group">
+        <h4>Keywords you're missing</h4>
+        <div class="kw-cloud" id="kw-missing"></div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-head">
+        <span class="num serif">02</span>
+        <h2>Your project descriptions</h2>
+      </div>
+      <p class="section-desc">Vague bullets like "worked on" or "helped with" hurt your score. Strong bullets show what you built and what changed because of it.</p>
+      <div id="projects"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-head">
+        <span class="num serif">03</span>
+        <h2>What to fix to clear the bar</h2>
+      </div>
+      <p class="section-desc">Each change below estimates how many points it should add to your score.</p>
+      <div class="lift-list" id="lift"></div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    A prototype · Built for students who deserve more than a black hole
+  </div>
+</footer>
+
+<script>
+const SKILL_TAXONOMY = [
+  'javascript','typescript','python','java','c++','go','rust',
+  'react','vue','angular','next.js','svelte',
+  'node.js','express','fastapi','django','flask',
+  'tailwind','css','html','sass',
+  'redux','zustand','mobx',
+  'rest','graphql','api',
+  'git','github','gitlab',
+  'jest','cypress','playwright','testing',
+  'vite','webpack','rollup',
+  'vercel','aws','gcp','azure','docker','kubernetes',
+  'sql','postgres','mongodb','redis',
+  'figma','responsive design',
+  'pandas','numpy','tensorflow','pytorch','scikit-learn'
+];
+
+const VAGUE_PHRASES = [
+  'worked on','helped with','was responsible for','responsible for',
+  'helped the team','various tasks','some javascript','helped me','was part of'
+];
+
+const STRONG_VERBS = [
+  'built','shipped','designed','architected','implemented','deployed',
+  'optimized','reduced','increased','automated','launched','created',
+  'developed','engineered','scaled','migrated','refactored'
+];
+
+function extractKeywords(text) {
+  const lower = text.toLowerCase();
+  return SKILL_TAXONOMY.filter(skill => {
+    const re = new RegExp('(^|[^a-z])' + skill.replace(/[.+]/g, '\\$&') + '($|[^a-z])', 'i');
+    return re.test(lower);
+  });
+}
+
+function findProjects(resume) {
+  const projSection = resume.match(/projects?\s*\n([\s\S]*?)(?=\n[A-Z][A-Z\s]{2,}\n|$)/i);
+  if (!projSection) return [];
+  const block = projSection[1];
+  const projects = [];
+  const lines = block.split(/\n/);
+  let current = null;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (current) { projects.push(current); current = null; }
+      continue;
+    }
+    if (!current && trimmed.length < 60 && !trimmed.endsWith('.')) {
+      current = { title: trimmed, body: '' };
+    } else if (current) {
+      current.body += (current.body ? ' ' : '') + trimmed;
+    }
+  }
+  if (current) projects.push(current);
+  return projects.filter(p => p.body.length > 10);
+}
+
+function scoreProject(p) {
+  const body = p.body.toLowerCase();
+  const issues = [];
+  let score = 100;
+
+  const vague = VAGUE_PHRASES.filter(v => body.includes(v));
+  if (vague.length) {
+    score -= 15 * Math.min(vague.length, 2);
+    issues.push(`Vague phrasing: "${vague.slice(0,2).join('", "')}"`);
+  }
+  const startsStrong = STRONG_VERBS.some(v => body.startsWith(v));
+  if (!startsStrong) {
+    score -= 10;
+    issues.push('Doesn\'t open with a strong action verb (Built, Shipped, Designed…)');
+  }
+  const hasNumber = /\d+\s*(%|x|users|requests|ms|seconds|hours|kb|mb|gb)/i.test(body)
+    || /\b(reduced|increased|improved|saved|cut)\b.*\d/i.test(body);
+  if (!hasNumber) {
+    score -= 20;
+    issues.push('No numbers or measurable impact');
+  }
+  const techMentioned = SKILL_TAXONOMY.filter(s => body.includes(s));
+  if (techMentioned.length === 0) {
+    score -= 15;
+    issues.push('No specific technology mentioned');
+  } else if (techMentioned.length < 2) {
+    score -= 5;
+    issues.push('Mention more of your tech stack');
+  }
+  if (p.body.length < 60) {
+    score -= 15;
+    issues.push('Too short — under one full sentence');
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  const rewrite = generateRewrite(p, techMentioned);
+  return { ...p, score, issues, rewrite };
+}
+
+function generateRewrite(p, tech) {
+  const t = p.title.toLowerCase();
+  if (t.includes('portfolio')) {
+    return 'Designed and shipped a responsive portfolio site using React, Tailwind, and Vite; deployed to Vercel with a 95+ Lighthouse performance score and under 1-second load time.';
+  }
+  if (t.includes('movie') || t.includes('recommend')) {
+    return 'Built a content-based movie recommendation engine in Python using pandas and scikit-learn; processed a 10K-film dataset and surfaced top-5 matches with cosine similarity (84% relevance in testing with 30 peers).';
+  }
+  const stack = tech.length ? tech.slice(0,3).join(', ') : 'React, TypeScript';
+  return `Built ${p.title} using ${stack}; [add a measurable outcome — e.g. served N users, reduced load time by X%, processed Z items].`;
+}
+
+function analyze() {
+  const resume = document.getElementById('resume').value.trim();
+  const jd = document.getElementById('jd').value.trim();
+  if (!resume || !jd) {
+    alert('Please paste both your resume and the job description.');
+    return;
+  }
+
+  const resumeKeywords = extractKeywords(resume);
+  const jdKeywords = extractKeywords(jd);
+  const matched = jdKeywords.filter(k => resumeKeywords.includes(k));
+  const missing = jdKeywords.filter(k => !resumeKeywords.includes(k));
+
+  const matchScore = jdKeywords.length === 0 ? 50
+    : Math.round((matched.length / jdKeywords.length) * 100);
+
+  const projects = findProjects(resume).map(scoreProject);
+  const projAvg = projects.length
+    ? Math.round(projects.reduce((a,p) => a + p.score, 0) / projects.length)
+    : 40;
+
+  const hasContact = /@/.test(resume) && /\d{3}/.test(resume);
+  const hasSections = /education/i.test(resume) && /(skills|experience|projects)/i.test(resume);
+  const formatScore = (hasContact ? 50 : 20) + (hasSections ? 50 : 20);
+
+  const composite = Math.round(matchScore * 0.45 + projAvg * 0.35 + formatScore * 0.20);
+
+  renderResults({
+    composite, matchScore, projAvg, formatScore,
+    matched, missing, projects, hasContact, hasSections
+  });
+}
+
+function renderResults(r) {
+  const results = document.getElementById('results');
+  results.classList.add('show');
+  setTimeout(() => results.scrollIntoView({ behavior: 'smooth' }), 50);
+
+  document.getElementById('score').textContent = r.composite;
+
+  const pill = document.getElementById('verdict-pill');
+  const msg = document.getElementById('verdict-msg');
+  const gap = document.getElementById('gap-callout');
+
+  if (r.composite >= 80) {
+    pill.textContent = 'Ready to apply';
+    pill.className = 'verdict-pill good';
+    msg.textContent = 'Your resume should pass most ATS filters for this role. Polish the project bullets to push it higher.';
+    gap.innerHTML = `You've cleared the <strong>80-point</strong> bar most filters use.`;
+  } else if (r.composite >= 60) {
+    pill.textContent = 'Almost there';
+    pill.className = 'verdict-pill warn';
+    msg.textContent = 'You\'re close. The ATS may rank you below candidates with stronger keyword and project alignment.';
+    gap.innerHTML = `You need <strong>+${80 - r.composite} points</strong> to clear the typical 80-point bar.`;
+  } else {
+    pill.textContent = 'Needs work';
+    pill.className = 'verdict-pill bad';
+    msg.textContent = 'Significant changes needed before submitting. Missing keywords and weak descriptions will likely filter you out.';
+    gap.innerHTML = `You need <strong>+${80 - r.composite} points</strong> to clear the typical 80-point bar.`;
+  }
+
+  document.getElementById('metrics').innerHTML = [
+    metricRow('Keyword match', r.matchScore, `${r.matched.length} of ${r.matched.length + r.missing.length}`),
+    metricRow('Project quality', r.projAvg, `${r.projAvg}/100`),
+    metricRow('Format & sections', r.formatScore, `${r.formatScore}/100`),
+  ].join('');
+
+  document.getElementById('kw-matched').innerHTML =
+    r.matched.length ? r.matched.map(k => `<span class="kw matched">${k}</span>`).join('')
+    : '<span style="font-size:13px; color: var(--ink-3);">None of the job\'s keywords found yet.</span>';
+  document.getElementById('kw-missing').innerHTML =
+    r.missing.length ? r.missing.map(k => `<span class="kw missing">${k}</span>`).join('')
+    : '<span style="font-size:13px; color: var(--good);">You\'ve got them all.</span>';
+
+  document.getElementById('projects').innerHTML = r.projects.length
+    ? r.projects.map(projectCard).join('')
+    : '<div style="font-size:14px; color: var(--ink-3); padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px;">No projects detected. Add a clear PROJECTS section with at least one project description.</div>';
+
+  const lifts = [];
+  if (r.missing.length) {
+    const top = r.missing.slice(0, 4);
+    lifts.push({
+      desc: `<strong>Add the missing keywords</strong> — ${top.join(', ')}`,
+      sub: 'Weave them naturally into your project bullets, not just the skills list.',
+      gain: '+' + Math.min(20, top.length * 4)
+    });
+  }
+  r.projects.forEach(p => {
+    if (p.score < 70) {
+      lifts.push({
+        desc: `<strong>Rewrite the "${p.title}" bullet</strong>`,
+        sub: 'Use the suggested rewrite above — it adds numbers and tech specifics.',
+        gain: '+' + Math.round((100 - p.score) * 0.15)
+      });
+    }
+  });
+  if (!r.hasContact) {
+    lifts.push({
+      desc: '<strong>Add complete contact info</strong>',
+      sub: 'Email and phone in plain text at the top — no icons or images.',
+      gain: '+8'
+    });
+  }
+  if (lifts.length === 0) {
+    lifts.push({
+      desc: '<strong>Looking solid.</strong>',
+      sub: 'Consider a short summary line at the top tailored to this role.',
+      gain: '+3'
+    });
+  }
+
+  document.getElementById('lift').innerHTML = lifts.map(l => `
+    <div class="lift-item">
+      <div class="desc">${l.desc}<small>${l.sub}</small></div>
+      <div class="gain">${l.gain}</div>
+    </div>
+  `).join('');
+}
+
+function metricRow(name, score, label) {
+  const cls = score >= 75 ? 'good' : score >= 50 ? 'warn' : 'bad';
+  return `
+    <div class="metric ${cls}">
+      <div class="name">${name}</div>
+      <div class="bar"><div style="width:${score}%"></div></div>
+      <div class="val">${label}</div>
+    </div>
+  `;
+}
+
+function projectCard(p) {
+  const cls = p.score >= 75 ? 'good' : p.score >= 50 ? 'warn' : 'bad';
+  const issuesHTML = p.issues.length
+    ? '<ul class="issues-list">' + p.issues.map(i => `<li>${i}</li>`).join('') + '</ul>'
+    : '<div style="font-size:13px; color: var(--good); margin: 6px 0 12px;">No issues detected.</div>';
+  return `
+    <div class="project-card">
+      <div class="head">
+        <div class="title">${p.title}</div>
+        <div class="score-pill ${cls}">${p.score}/100</div>
+      </div>
+      <div class="original">${p.body}</div>
+      ${issuesHTML}
+      <div class="rewrite-box">
+        <div class="lbl">Suggested rewrite</div>
+        <div class="body">${p.rewrite}</div>
+      </div>
+    </div>
+  `;
+}
+
+function resetDemo() {
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('input-section').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
