@@ -9,11 +9,13 @@ import { ScoreCard } from '@/components/ScoreCard';
 import { MatchSection } from '@/components/MatchSection';
 import { ProjectsSection } from '@/components/ProjectsSection';
 import { LiftSection } from '@/components/LiftSection';
+import { TailorCTA } from '@/components/TailorCTA';
 import { Footer } from '@/components/Footer';
 import type { AnalysisResult } from '@/types/analysis';
 
 export default function Home() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [lastInput, setLastInput] = useState<{ resume: string; jd: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLElement>(null);
@@ -42,6 +44,7 @@ export default function Home() {
       }
       const data = (await res.json()) as AnalysisResult;
       setResult(data);
+      setLastInput({ resume, jd });
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Something went wrong';
       setError(msg);
@@ -52,6 +55,7 @@ export default function Home() {
 
   function handleReset() {
     setResult(null);
+    setLastInput(null);
     setError(null);
     document.getElementById('input-section')?.scrollIntoView({ behavior: 'smooth' });
   }
@@ -81,6 +85,7 @@ export default function Home() {
             />
             <ProjectsSection projects={result.projects} />
             <LiftSection lifts={result.lifts} />
+            {lastInput && <TailorCTA resume={lastInput.resume} jd={lastInput.jd} />}
           </div>
         </section>
       )}
