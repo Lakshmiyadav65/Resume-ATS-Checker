@@ -1,5 +1,12 @@
 export type Verdict = 'ready' | 'almost' | 'needs-work';
 
+export type ShortlistOutcome = 'yes' | 'borderline' | 'no';
+
+export interface Prediction {
+  outcome: ShortlistOutcome;
+  reason: string;
+}
+
 export interface Project {
   title: string;
   body: string;
@@ -17,6 +24,7 @@ export interface Lift {
 export interface AnalysisResult {
   composite: number;
   verdict: Verdict;
+  prediction: Prediction;
   matchScore: number;
   projAvg: number;
   formatScore: number;

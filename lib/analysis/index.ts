@@ -3,6 +3,7 @@ import { findProjects, scoreProject, projectAverage, type ScoredProject } from '
 import { checkContact, checkSections, formatScore } from './format';
 import { compositeScore, verdictFor } from './composite';
 import { generateLifts } from './lifts';
+import { predictShortlist } from './prediction';
 import type { AnalysisResult, Project } from '@/types/analysis';
 
 export interface RunAnalysisResult extends AnalysisResult {
@@ -25,10 +26,21 @@ export function runAnalysis(resume: string, jd: string): RunAnalysisResult {
 
   const projects: Project[] = scoredProjects.map(({ detectedTech: _t, ...rest }) => rest);
   const lifts = generateLifts({ missing, projects, hasContact });
+  const prediction = predictShortlist({
+    composite,
+    matchScore: ms,
+    projAvg,
+    formatScore: fs,
+    missing,
+    projects,
+    hasContact,
+    hasSections,
+  });
 
   return {
     composite,
     verdict,
+    prediction,
     matchScore: ms,
     projAvg,
     formatScore: fs,

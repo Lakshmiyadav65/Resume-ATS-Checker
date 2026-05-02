@@ -43,6 +43,7 @@ export async function POST(req: Request) {
   const result: AnalysisResult = {
     composite: analysis.composite,
     verdict: analysis.verdict,
+    prediction: analysis.prediction,
     matchScore: analysis.matchScore,
     projAvg: analysis.projAvg,
     formatScore: analysis.formatScore,

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { InputForm } from '@/components/InputForm';
+import { ShortlistBanner } from '@/components/ShortlistBanner';
 import { ScoreCard } from '@/components/ScoreCard';
 import { MatchSection } from '@/components/MatchSection';
 import { ProjectsSection } from '@/components/ProjectsSection';
@@ -69,6 +70,7 @@ export default function Home() {
       {result && (
         <section ref={resultsRef} className="border-t border-line py-[60px] animate-fadeUp">
           <div className="container max-w-page mx-auto px-6">
+            <ShortlistBanner prediction={result.prediction} />
             <ScoreCard composite={result.composite} verdict={result.verdict} />
             <MatchSection
               matchScore={result.matchScore}
