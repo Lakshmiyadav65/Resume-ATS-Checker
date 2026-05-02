@@ -91,13 +91,13 @@ export function InputForm({ onAnalyze, onReset, loading, error }: InputFormProps
       <div className="container max-w-page mx-auto px-6">
         <div className="mb-9">
           <div className="flex items-baseline justify-between mb-1.5">
-            <label htmlFor="resume" className="text-sm font-semibold">
+            <label htmlFor="resume" className="text-[15px] font-semibold">
               Your resume
             </label>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="text-[12px] text-ink-3 hover:text-ink underline underline-offset-2 decoration-line"
+              className="text-sm text-ink-3 hover:text-ink underline underline-offset-2 decoration-line"
             >
               Upload PDF / DOCX
             </button>
@@ -113,39 +113,39 @@ export function InputForm({ onAnalyze, onReset, loading, error }: InputFormProps
               }}
             />
           </div>
-          <p className="text-[13px] text-ink-3 mb-3">
+          <p className="text-sm text-ink-3 mb-3">
             Paste the full text. Include your projects, skills, and experience sections.
           </p>
           <textarea
             id="resume"
             value={resume}
             onChange={(e) => setResume(e.target.value)}
-            className="w-full bg-surface border border-line rounded-lg p-4 font-sans text-sm leading-[1.6] text-ink min-h-[240px] resize-y outline-none focus:border-accent transition-colors"
+            className="w-full bg-surface border border-line rounded-lg p-4 font-sans text-[15px] leading-[1.6] text-ink min-h-[240px] resize-y outline-none focus:border-accent transition-colors"
             placeholder="Paste your resume here..."
           />
           {uploadWarning && (
-            <p className="mt-2 text-[13px] text-warn">{uploadWarning}</p>
+            <p className="mt-2 text-sm text-warn">{uploadWarning}</p>
           )}
         </div>
 
         <div className="mb-9">
-          <label htmlFor="jd" className="block text-sm font-semibold mb-1.5">
+          <label htmlFor="jd" className="block text-[15px] font-semibold mb-1.5">
             Job description
           </label>
-          <p className="text-[13px] text-ink-3 mb-3">
+          <p className="text-sm text-ink-3 mb-3">
             Paste the job posting you want to apply to.
           </p>
           <textarea
             id="jd"
             value={jd}
             onChange={(e) => setJd(e.target.value)}
-            className="w-full bg-surface border border-line rounded-lg p-4 font-sans text-sm leading-[1.6] text-ink min-h-[180px] resize-y outline-none focus:border-accent transition-colors"
+            className="w-full bg-surface border border-line rounded-lg p-4 font-sans text-[15px] leading-[1.6] text-ink min-h-[180px] resize-y outline-none focus:border-accent transition-colors"
             placeholder="Paste the job description..."
           />
         </div>
 
         {error && (
-          <div className="mb-4 text-center text-[13px] text-bad bg-bad-soft py-2 px-4 rounded-full inline-block mx-auto" role="alert">
+          <div className="mb-4 text-center text-sm text-bad bg-bad-soft py-2 px-4 rounded-full inline-block mx-auto" role="alert">
             {error}
           </div>
         )}

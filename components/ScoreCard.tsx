@@ -25,7 +25,7 @@ export function ScoreCard({ composite, verdict }: { composite: number; verdict: 
 
   return (
     <div className="bg-surface border border-line rounded-xl p-10 text-center mb-9">
-      <div className="text-[13px] text-ink-3 mb-3">Your ATS score</div>
+      <div className="text-sm text-ink-3 mb-3">Your ATS score</div>
       <div className="font-serif font-normal leading-none tracking-[-0.04em] text-[72px] md:text-[96px]">
         {composite}
         <sub className="text-2xl text-ink-3 align-baseline font-sans">/100</sub>
@@ -33,8 +33,8 @@ export function ScoreCard({ composite, verdict }: { composite: number; verdict: 
       <Pill tone={copy.tone} className="mt-4">
         {copy.label}
       </Pill>
-      <p className="mt-[14px] text-[15px] text-ink-2 max-w-[480px] mx-auto">{copy.msg}</p>
-      <div className="mt-6 pt-6 border-t border-line text-sm text-ink-2">
+      <p className="mt-[14px] text-base text-ink-2 max-w-[480px] mx-auto">{copy.msg}</p>
+      <div className="mt-6 pt-6 border-t border-line text-[15px] text-ink-2">
         {gap > 0 ? (
           <>
             You need <strong className="text-accent-2 font-semibold">+{gap} points</strong> to clear the typical 80-point bar.

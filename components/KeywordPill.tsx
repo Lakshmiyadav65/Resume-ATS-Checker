@@ -16,7 +16,7 @@ export function KeywordPill({
   return (
     <span
       className={[
-        'inline-block text-[13px] py-[5px] px-3 rounded-full border',
+        'inline-block text-sm py-[6px] px-3.5 rounded-full border',
         styles[variant],
       ].join(' ')}
     >

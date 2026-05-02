@@ -7,7 +7,7 @@ export function Header() {
           <span className="inline-block w-2 h-2 bg-accent rounded-full mx-[3px] mb-[2px] align-middle" />
           check
         </div>
-        <a href="#how" className="text-[13px] text-ink-3 hover:text-ink no-underline">
+        <a href="#how" className="text-sm text-ink-3 hover:text-ink no-underline">
           How it works
         </a>
       </div>

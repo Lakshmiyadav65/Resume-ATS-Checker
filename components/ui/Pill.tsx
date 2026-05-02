@@ -21,7 +21,7 @@ export function Pill({
   return (
     <span
       className={[
-        'inline-block px-[14px] py-[6px] rounded-full text-[13px] font-medium',
+        'inline-block px-[14px] py-[6px] rounded-full text-sm font-medium',
         tones[tone],
         className,
       ].join(' ')}

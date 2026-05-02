@@ -10,8 +10,8 @@ body {
   background: theme('colors.bg');
   color: theme('colors.ink');
   font-family: var(--font-inter), -apple-system, sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
