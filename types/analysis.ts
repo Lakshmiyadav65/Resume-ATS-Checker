@@ -21,6 +21,13 @@ export interface Lift {
   gain: number;
 }
 
+export type InputWarningKind = 'resume-is-job-description' | 'not-a-resume';
+
+export interface InputWarning {
+  kind: InputWarningKind;
+  message: string;
+}
+
 export interface AnalysisResult {
   composite: number;
   verdict: Verdict;
@@ -34,6 +41,7 @@ export interface AnalysisResult {
   hasContact: boolean;
   hasSections: boolean;
   lifts: Lift[];
+  inputWarning: InputWarning | null;
 }
 
 export interface AnalyzeRequest {

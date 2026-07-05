@@ -7,12 +7,12 @@ A web app that helps students predict whether their resume will pass an Applican
 1. **Resume × Job Description compatibility check** — paste both, get a 0–100 ATS score and a verdict.
 2. **Project description audit** — each project bullet is scored on action verbs, quantified impact, tech stack, length, and vague phrasing.
 3. **Score-lift recommendations** — every recommendation has an estimated point gain.
-4. **AI-generated rewrites** — weak bullets are rewritten by Claude in the XYZ format with measurable outcomes. Falls back to a deterministic rewrite when no API key is set, so the app runs out of the box.
+4. **AI-generated rewrites & tailoring** — weak bullets are rewritten (and the whole resume can be tailored to a job) by an LLM in the XYZ format with measurable outcomes. Falls back to deterministic rewrites when no API key is set, so the app runs out of the box.
 
 ## Stack
 
 - **Next.js 14** (App Router) + **TypeScript** + **Tailwind CSS**
-- **Anthropic Claude API** — `claude-haiku-4-5-20251001` for bullet rewrites
+- **Groq API** (OpenAI-compatible) — `llama-3.3-70b-versatile` for bullet rewrites and resume tailoring
 - `pdf-parse` and `mammoth` for resume file uploads (PDF / DOCX)
 - Deploys to **Vercel** with zero config
 
@@ -21,7 +21,7 @@ A web app that helps students predict whether their resume will pass an Applican
 ```bash
 npm install
 cp .env.example .env.local
-# (optional) put your ANTHROPIC_API_KEY in .env.local for live LLM rewrites
+# (optional) put your GROQ_API_KEY in .env.local for live LLM rewrites (free at console.groq.com/keys)
 npm run dev
 ```
 
@@ -47,7 +47,7 @@ app/                       Next.js App Router pages and API routes
 components/                React components (Header, Hero, ScoreCard, …)
 lib/
   analysis/                Scoring engine
-  llm/                     Anthropic SDK wrappers and prompts
+  llm/                     Groq LLM client (fetch-based) and prompts
   parsing/                 PDF/DOCX text extraction
   data/                    Skills taxonomy, vague phrases, strong verbs
 types/                     Shared TypeScript types
@@ -56,4 +56,4 @@ design-reference.html      The original visual prototype — source of truth for
 
 ## Deployment
 
-Push to GitHub and import into Vercel. Set `ANTHROPIC_API_KEY` in the project env vars. No database needed for v1.
+Push to GitHub and import into Vercel. Set `GROQ_API_KEY` in the project env vars. No database needed for v1.

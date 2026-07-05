@@ -1,4 +1,4 @@
-import { getAnthropic, MODEL } from './client';
+import { groqChat } from './client';
 import type { TailoredResume } from '@/types/tailored';
 
 const TAILOR_SYSTEM_PROMPT = `You are a resume tailoring assistant. Your job is to take an existing resume and a target job description, then produce a NEW resume that:
@@ -113,19 +113,18 @@ function coerce(raw: unknown): TailoredResume | null {
 }
 
 export async function tailorResumeWithLLM(input: { resume: string; jd: string }): Promise<TailoredResume | null> {
-  const client = getAnthropic();
-  if (!client) return null;
+  const text = await groqChat({
+    messages: [
+      { role: 'system', content: TAILOR_SYSTEM_PROMPT },
+      { role: 'user', content: buildUserPrompt(input.resume, input.jd) },
+    ],
+    maxTokens: 2500,
+    temperature: 0.3,
+    json: true,
+  });
+  if (!text) return null;
 
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 2500,
-      system: TAILOR_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildUserPrompt(input.resume, input.jd) }],
-    });
-
-    const block = response.content[0];
-    const text = block && block.type === 'text' ? block.text : '';
     const cleaned = text.replace(/```json|```/g, '').trim();
     const parsed: unknown = JSON.parse(cleaned);
     return coerce(parsed);

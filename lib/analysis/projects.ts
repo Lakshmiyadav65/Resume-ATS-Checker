@@ -1,6 +1,7 @@
 import { SKILL_TAXONOMY } from '@/lib/data/skills-taxonomy';
 import { VAGUE_PHRASES } from '@/lib/data/vague-phrases';
 import { STRONG_VERBS } from '@/lib/data/strong-verbs';
+import { extractSectionBody } from './sections';
 import type { Project } from '@/types/analysis';
 
 interface RawProject {
@@ -8,11 +9,23 @@ interface RawProject {
   body: string;
 }
 
-export function findProjects(resume: string): RawProject[] {
-  const projSection = resume.match(/projects?\s*\n([\s\S]*?)(?=\n[A-Z][A-Z\s]{2,}\n|$)/i);
-  if (!projSection) return [];
+// The first line of a project entry is a title when it's short and reads like a
+// label rather than a full sentence. We reject long lines and multi-clause
+// sentences, but a brief single-clause line ending in a period (e.g. "Movie
+// App.") is still a title. A blanket `endsWith('.')` guard dropped those, and
+// because no title was set the following body lines couldn't attach either —
+// silently discarding the whole project and collapsing the score.
+function looksLikeTitle(line: string): boolean {
+  if (line.length >= 60) return false; // titles are short
+  if (line.split(/\s+/).filter(Boolean).length > 8) return false; // sentences are wordy
+  if (/[.!?]\s+\S/.test(line)) return false; // more than one sentence on the line
+  return true;
+}
 
-  const block = projSection[1];
+export function findProjects(resume: string): RawProject[] {
+  const block = extractSectionBody(resume, /^projects?\b/i);
+  if (!block) return [];
+
   const projects: RawProject[] = [];
   const lines = block.split(/\n/);
   let current: RawProject | null = null;
@@ -26,7 +39,7 @@ export function findProjects(resume: string): RawProject[] {
       }
       continue;
     }
-    if (!current && trimmed.length < 60 && !trimmed.endsWith('.')) {
+    if (!current && looksLikeTitle(trimmed)) {
       current = { title: trimmed, body: '' };
     } else if (current) {
       current.body += (current.body ? ' ' : '') + trimmed;
