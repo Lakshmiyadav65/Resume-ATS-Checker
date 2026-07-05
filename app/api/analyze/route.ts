@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { runAnalysis } from '@/lib/analysis';
+import { normalizeText } from '@/lib/analysis/normalize';
 import { rewriteBullet } from '@/lib/llm/rewrite-bullet';
 import type { AnalysisResult, AnalyzeRequest } from '@/types/analysis';
 
@@ -13,8 +14,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const resume = (body.resume || '').trim();
-  const jd = (body.jd || '').trim();
+  const resume = normalizeText(body.resume || '');
+  const jd = normalizeText(body.jd || '');
   if (!resume || !jd) {
     return NextResponse.json(
       { error: 'Both resume and job description are required.' },
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
     hasContact: analysis.hasContact,
     hasSections: analysis.hasSections,
     lifts: analysis.lifts,
+    inputWarning: analysis.inputWarning,
     projects: analysis.projects.map((p) => {
       const r = rewrites.find((x) => x.title === p.title);
       return r && r.rewrite ? { ...p, rewrite: r.rewrite } : p;

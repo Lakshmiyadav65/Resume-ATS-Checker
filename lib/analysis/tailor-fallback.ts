@@ -1,5 +1,6 @@
 import { compareKeywords } from './keywords';
 import { findProjects, scoreProject } from './projects';
+import { extractSectionBody } from './sections';
 import { deterministicRewrite } from '@/lib/llm/rewrite-bullet';
 import type { TailoredResume } from '@/types/tailored';
 
@@ -18,13 +19,6 @@ function extractContact(resume: string): TailoredResume['contact'] {
   const github = resume.match(/github\.com\/[\w-]+/i)?.[0];
   const linkedin = resume.match(/linkedin\.com\/in\/[\w-]+/i)?.[0];
   return { email, phone, github, linkedin };
-}
-
-function extractSection(resume: string, headerRegex: RegExp): string {
-  const m = resume.match(
-    new RegExp(headerRegex.source + '\\s*\\n([\\s\\S]*?)(?=\\n[A-Z][A-Z\\s]{2,}\\n|$)', 'i'),
-  );
-  return m ? m[1].trim() : '';
 }
 
 function parseEducation(block: string): TailoredResume['education'] {
@@ -80,10 +74,10 @@ export function deterministicTailor(input: { resume: string; jd: string }): Tail
     ],
   }));
 
-  const educationBlock = extractSection(input.resume, /education/);
+  const educationBlock = extractSectionBody(input.resume, /^education\b/i);
   const education = parseEducation(educationBlock);
 
-  const skillsBlock = extractSection(input.resume, /skills/);
+  const skillsBlock = extractSectionBody(input.resume, /^(technical\s+)?skills\b/i);
   const existing = parseSkills(skillsBlock);
   const skills = Array.from(
     new Set([
@@ -92,7 +86,7 @@ export function deterministicTailor(input: { resume: string; jd: string }): Tail
     ]),
   );
 
-  const experienceBlock = extractSection(input.resume, /experience/);
+  const experienceBlock = extractSectionBody(input.resume, /^(work\s+)?experience\b/i);
   const experience = parseExperience(experienceBlock);
 
   const summary = buildSummary(input.jd, skills);

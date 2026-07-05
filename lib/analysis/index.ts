@@ -4,6 +4,7 @@ import { checkContact, checkSections, formatScore } from './format';
 import { compositeScore, verdictFor } from './composite';
 import { generateLifts } from './lifts';
 import { predictShortlist } from './prediction';
+import { validateResumeInput } from './validate';
 import type { AnalysisResult, Project } from '@/types/analysis';
 
 export interface RunAnalysisResult extends AnalysisResult {
@@ -23,6 +24,8 @@ export function runAnalysis(resume: string, jd: string): RunAnalysisResult {
 
   const composite = compositeScore(ms, projAvg, fs);
   const verdict = verdictFor(composite);
+
+  const inputWarning = validateResumeInput(resume, jd);
 
   const projects: Project[] = scoredProjects.map(({ detectedTech: _t, ...rest }) => rest);
   const lifts = generateLifts({ missing, projects, hasContact });
@@ -50,6 +53,7 @@ export function runAnalysis(resume: string, jd: string): RunAnalysisResult {
     hasContact,
     hasSections,
     lifts,
+    inputWarning,
     scoredProjects,
   };
 }

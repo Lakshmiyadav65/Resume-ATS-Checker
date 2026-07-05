@@ -1,4 +1,4 @@
-import { getAnthropic, MODEL } from './client';
+import { groqChat } from './client';
 import { buildRewritePrompt, type RewritePromptInput } from './prompts';
 
 export function deterministicRewrite(input: {
@@ -17,27 +17,25 @@ export function deterministicRewrite(input: {
 }
 
 export async function rewriteBullet(input: RewritePromptInput): Promise<string> {
-  const client = getAnthropic();
-  if (!client) {
-    return deterministicRewrite({ title: input.title, detectedTech: input.detectedTech });
-  }
+  const fallback = () =>
+    deterministicRewrite({ title: input.title, detectedTech: input.detectedTech });
+
+  const text = await groqChat({
+    messages: [{ role: 'user', content: buildRewritePrompt(input) }],
+    maxTokens: 300,
+    temperature: 0.4,
+    json: true,
+  });
+  if (!text) return fallback();
 
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 300,
-      messages: [{ role: 'user', content: buildRewritePrompt(input) }],
-    });
-
-    const block = response.content[0];
-    const text = block && block.type === 'text' ? block.text : '';
     const cleaned = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(cleaned) as { rewrite?: string };
     if (typeof parsed.rewrite === 'string' && parsed.rewrite.length > 0) {
       return parsed.rewrite;
     }
-    return deterministicRewrite({ title: input.title, detectedTech: input.detectedTech });
+    return fallback();
   } catch {
-    return deterministicRewrite({ title: input.title, detectedTech: input.detectedTech });
+    return fallback();
   }
 }

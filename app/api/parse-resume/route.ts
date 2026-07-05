@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parsePdf } from '@/lib/parsing/pdf';
 import { parseDocx } from '@/lib/parsing/docx';
+import { normalizeText } from '@/lib/analysis/normalize';
 
 export const runtime = 'nodejs';
 
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const cleaned = text.replace(/\r\n/g, '\n').trim();
+  const cleaned = normalizeText(text);
   const looksGarbled =
     cleaned.length < 200 || !/(EDUCATION|PROJECTS|EXPERIENCE|SKILLS)/i.test(cleaned);
 
